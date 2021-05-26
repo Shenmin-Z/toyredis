@@ -1,0 +1,28 @@
+name: Build and Test
+on: [push]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: Install Redis
+        run: |
+          wget http://download.redis.io/redis-stable.tar.gz
+          tar xvzf redis-stable.tar.gz
+          cd redis-stable
+          make redis-cli
+          sudo cp src/redis-cli /usr/local/bin/
+
+      - name: Check out source code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: go build .
+
+      - name: Test
+        run: go test -v .
